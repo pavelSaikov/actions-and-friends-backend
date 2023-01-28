@@ -1,10 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
+import { IUser } from '../dto';
+
 export type UserDocument = HydratedDocument<User>;
 
 @Schema()
-export class User {
+export class User implements Omit<IUser, 'id'> {
   @Prop()
   email: string;
 

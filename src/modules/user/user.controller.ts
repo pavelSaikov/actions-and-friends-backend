@@ -41,7 +41,6 @@ export class UserController {
     return id;
   }
 
-  @Serialize(UserDto)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(id);

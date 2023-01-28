@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ActionService } from './action.service';
+
 import { ActionController } from './action.controller';
+import { DatabaseModule } from '../database/database.module';
 
 @Module({
+  imports: [DatabaseModule],
   controllers: [ActionController],
-  providers: [ActionService],
 })
 export class ActionModule {}
