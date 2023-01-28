@@ -5,13 +5,18 @@ import { ActionSchema, Action } from '../action/schemas';
 import { User, UserSchema } from '../user/schemas';
 import { ActionService } from '../action/action.service';
 import { UserService } from '../user/user.service';
+import { Friendship, FriendshipSchema } from '../friends/schemas';
+import { FriendsService } from '../friends/friends.service';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    MongooseModule.forFeature([{ name: Action.name, schema: ActionSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Action.name, schema: ActionSchema },
+      { name: Friendship.name, schema: FriendshipSchema },
+    ]),
   ],
-  exports: [UserService, ActionService],
-  providers: [UserService, ActionService],
+  exports: [UserService, ActionService, FriendsService],
+  providers: [UserService, ActionService, FriendsService],
 })
 export class DatabaseModule {}

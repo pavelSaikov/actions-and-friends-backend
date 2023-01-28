@@ -1,26 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFriendDto } from './dto/create-friend.dto';
-import { UpdateFriendDto } from './dto/update-friend.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+
+import { FriendshipDto } from './dto';
+import { Friendship } from './schemas';
 
 @Injectable()
 export class FriendsService {
-  create(createFriendDto: CreateFriendDto) {
-    return 'This action adds a new friend';
+  constructor(
+    @InjectModel(Friendship.name) private friendshipModel: Model<Friendship>,
+  ) {}
+
+  create(createFriendDto: FriendshipDto) {
+    return this.friendshipModel.create(createFriendDto);
   }
 
-  findAll() {
-    return `This action returns all friends`;
+  findAllFriends(userId: string) {
+    return this.friendshipModel.find({ userId });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} friend`;
+  findAllFriendshipEntities(userId: string) {
+    return this.friendshipModel.find({
+      $or: [{ userId }, { friendId: userId }],
+    });
   }
 
-  update(id: number, updateFriendDto: UpdateFriendDto) {
-    return `This action updates a #${id} friend`;
+  async isFriends(userId: string, friendId: string) {
+    const result = await this.friendshipModel.find({ userId, friendId });
+    return !!(result && result.length);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} friend`;
+  update(userId: string, updateFriendDto: FriendshipDto) {
+    return this.friendshipModel.updateOne({ _id: userId }, updateFriendDto);
+  }
+
+  removeUserFriendships(userId: string) {
+    return Promise.all([
+      this.friendshipModel.deleteMany({ userId }),
+      this.friendshipModel.deleteMany({ friendId: userId }),
+    ]);
+  }
+
+  removeById(id: string) {
+    return this.friendshipModel.deleteOne({ _id: id });
   }
 }

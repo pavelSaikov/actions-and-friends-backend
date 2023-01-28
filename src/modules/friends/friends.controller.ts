@@ -1,34 +1,51 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UsePipes,
+} from '@nestjs/common';
+
 import { FriendsService } from './friends.service';
-import { CreateFriendDto } from './dto/create-friend.dto';
-import { UpdateFriendDto } from './dto/update-friend.dto';
+import { FriendshipDto } from './dto';
+import {
+  CheckFriendshipExistencePipe,
+  CheckUserAndFriendExistencePipe,
+} from './pipes';
 
 @Controller('friends')
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 
   @Post()
-  create(@Body() createFriendDto: CreateFriendDto) {
-    return this.friendsService.create(createFriendDto);
+  @UsePipes(CheckUserAndFriendExistencePipe, CheckFriendshipExistencePipe)
+  create(@Body() newFriendshipDto: FriendshipDto) {
+    return this.friendsService.create(newFriendshipDto);
   }
 
-  @Get()
-  findAll() {
-    return this.friendsService.findAll();
+  @Get(':userId')
+  findAll(@Param('userId') id: string) {
+    return this.friendsService.findAllFriends(id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.friendsService.findOne(+id);
+  @Get(':userId/:friendId')
+  isFriends(
+    @Param('userId') userId: string,
+    @Param('friendId') friendId: string,
+  ) {
+    return this.friendsService.isFriends(userId, friendId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFriendDto: UpdateFriendDto) {
-    return this.friendsService.update(+id, updateFriendDto);
+  @Delete('/user/:userId')
+  removeAllUserFriendships(@Param('userId') userId: string) {
+    return this.friendsService.removeUserFriendships(userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.friendsService.remove(+id);
+  removeFriendship(@Param('id') id: string) {
+    return this.friendsService.removeById(id);
   }
 }
