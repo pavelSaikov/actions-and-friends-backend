@@ -7,12 +7,16 @@ import {
   Param,
   Delete,
   UsePipes,
+  UseGuards,
 } from '@nestjs/common';
+
+import { JwtAuthGuard } from '../auth';
 import { ActionService } from './action.service';
 import { CreateActionDto } from './dto/create-action.dto';
 import { UpdateActionDto } from './dto/update-action.dto';
 import { CheckUserExistencePipe } from './pipes';
 
+@UseGuards(JwtAuthGuard)
 @Controller('action')
 export class ActionController {
   constructor(private readonly actionService: ActionService) {}

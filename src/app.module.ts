@@ -11,6 +11,7 @@ import {
   CommentsModule,
 } from './modules';
 import { ConfigKey } from './config';
+import { AuthModule } from './modules/auth';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ConfigKey } from './config';
     ActionModule,
     FriendsModule,
     CommentsModule,
+    AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
       inject: [ConfigService],
