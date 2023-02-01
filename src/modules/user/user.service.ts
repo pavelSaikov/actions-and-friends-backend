@@ -31,7 +31,7 @@ export class UserService {
       // const hashedPassword = await this.hashPassword(createUserDto.password);
 
       const result = await new this.userModel({
-        createUserDto,
+        ...createUserDto,
         // password: hashedPassword,
       }).save();
 
