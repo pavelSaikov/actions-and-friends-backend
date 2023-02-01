@@ -36,7 +36,8 @@ export class ActionService {
     const action = this.findOne(id);
 
     if (action) {
-      return this.actionModel.deleteOne({ _id: id });
+      await this.actionModel.deleteOne({ _id: id });
+      return id;
     }
   }
 }

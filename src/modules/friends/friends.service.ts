@@ -41,7 +41,9 @@ export class FriendsService {
     ]);
   }
 
-  removeById(id: string) {
-    return this.friendshipModel.deleteOne({ _id: id });
+  async removeById(userId: string, friendId: string) {
+    return this.friendshipModel.deleteOne({
+      $and: [{ userId: { $eq: userId } }, { friendId: { $eq: friendId } }],
+    });
   }
 }

@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UsePipes,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 
 import { FriendsService } from './friends.service';
@@ -15,7 +17,10 @@ import {
   CheckFriendshipExistencePipe,
   CheckUserAndFriendExistencePipe,
 } from './pipes';
+import { JwtAuthGuard } from '../auth';
+import { RequestWithUser } from '../models';
 
+@UseGuards(JwtAuthGuard)
 @Controller('friends')
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
@@ -26,26 +31,29 @@ export class FriendsController {
     return this.friendsService.create(newFriendshipDto);
   }
 
-  @Get(':userId')
-  findAll(@Param('userId') id: string) {
-    return this.friendsService.findAllFriends(id);
+  @Get('')
+  findAll(@Req() request: RequestWithUser) {
+    return this.friendsService.findAllFriends(request.user.id);
   }
 
-  @Get(':userId/:friendId')
+  @Get(':friendId')
   isFriends(
-    @Param('userId') userId: string,
+    @Req() request: RequestWithUser,
     @Param('friendId') friendId: string,
   ) {
-    return this.friendsService.isFriends(userId, friendId);
+    return this.friendsService.isFriends(request.user.id, friendId);
   }
 
-  @Delete('/user/:userId')
-  removeAllUserFriendships(@Param('userId') userId: string) {
-    return this.friendsService.removeUserFriendships(userId);
+  @Delete('/user')
+  removeAllUserFriendships(@Req() request: RequestWithUser) {
+    return this.friendsService.removeUserFriendships(request.user.id);
   }
 
-  @Delete(':id')
-  removeFriendship(@Param('id') id: string) {
-    return this.friendsService.removeById(id);
+  @Delete(':friendId')
+  removeFriendship(
+    @Param('friendId') friendId: string,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.friendsService.removeById(request.user.id, friendId);
   }
 }

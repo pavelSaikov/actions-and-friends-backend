@@ -24,11 +24,13 @@ import { AuthModule } from './modules/auth';
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        return {
+        const config = {
           uri: configService.get(ConfigKey.MongoUrl),
           dbName: configService.get(ConfigKey.MongoDbName),
           authSource: configService.get(ConfigKey.MongoAuthSource),
         };
+
+        return config;
       },
     }),
   ],

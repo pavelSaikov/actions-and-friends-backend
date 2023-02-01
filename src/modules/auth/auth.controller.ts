@@ -3,7 +3,7 @@ import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './guards';
+import { JwtAuthGuard, LocalAuthGuard } from './guards';
 
 @Controller('auth')
 export class AuthController {
@@ -19,8 +19,14 @@ export class AuthController {
   }
 
   @UseGuards(LocalAuthGuard)
-  @Post('/login')
+  @Post('login')
   async login(@Request() req) {
     return this.authService.login(req.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('check')
+  async checkToken() {
+    return true;
   }
 }

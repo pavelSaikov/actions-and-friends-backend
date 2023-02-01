@@ -8,6 +8,7 @@ import {
   Delete,
   UsePipes,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from '../auth';
@@ -27,8 +28,8 @@ export class ActionController {
     return this.actionService.create(createActionDto);
   }
 
-  @Get('/user/:userId')
-  findAllByUserId(@Param('userId') userId: string) {
+  @Get('/user/:id')
+  findAllByUserId(@Param('id') userId: string) {
     return this.actionService.findAllByUserId(userId);
   }
 

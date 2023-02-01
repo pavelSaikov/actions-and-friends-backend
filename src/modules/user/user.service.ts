@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
-import * as bcrypt from 'bcrypt';
+// import * as bcrypt from 'bcrypt';
 
 import { ActionService } from '../action/action.service';
 import { FriendsService } from '../friends/friends.service';
@@ -28,11 +28,11 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const hashedPassword = await this.hashPassword(createUserDto.password);
+      // const hashedPassword = await this.hashPassword(createUserDto.password);
 
       const result = await new this.userModel({
-        ...createUserDto,
-        password: hashedPassword,
+        createUserDto,
+        // password: hashedPassword,
       }).save();
 
       return result;
@@ -75,11 +75,15 @@ export class UserService {
         id,
       );
 
-      return Promise.all([
+      await Promise.all([
         this.userModel.deleteOne({ _id: id }),
         ...actions.map(({ id }) => this.actionService.remove(id)),
-        ...friendships.map(({ id }) => this.friendsService.removeById(id)),
+        ...friendships.map(({ userId, friendId }) =>
+          this.friendsService.removeById(userId, friendId),
+        ),
       ]);
+
+      return id;
     }
   }
 
@@ -91,7 +95,8 @@ export class UserService {
     originalPassword: string,
     password: string,
   ): Promise<boolean> {
-    return bcrypt.compare(password, originalPassword);
+    return Promise.resolve(originalPassword === password);
+    // return bcrypt.compare(password, originalPassword);
   }
 
   async checkUserExistenceByIdAndEmail(
@@ -103,10 +108,10 @@ export class UserService {
     return user && user.email === email;
   }
 
-  private hashPassword(originalPassword: string): Promise<string> {
-    return bcrypt.hash(
-      originalPassword,
-      Number(this.configService.get<string>(ConfigKey.HashRounds)),
-    );
-  }
+  // private hashPassword(originalPassword: string): Promise<string> {
+  //   return bcrypt.hash(
+  //     originalPassword,
+  //     Number(this.configService.get<string>(ConfigKey.HashRounds)),
+  //   );
+  // }
 }
